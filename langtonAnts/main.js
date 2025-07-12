@@ -1,8 +1,4 @@
-const canvas = document.getElementById('gridCanvas');
-const ctx = canvas.getContext('2d');
-
 const gridSize = 128;
-const cellSize = canvas.width / gridSize;
 
 const cellColors = {
     0: 'white',
@@ -34,15 +30,17 @@ const rules = {
         [{ turn: -1, newGridColor: 0, newState: 0 }],
     ]
 };
-
-let grid = createEmptyGrid();
+let iterationCount = 0;
+let tileCounts = { 0: 0, 1: 0, 2: 0 };
 let ants = [];
 
-let intervalId;
-let simulationSpeed = 100;
+let grid = createEmptyGrid();
+
 
 function createEmptyGrid() {
-    return Array.from({ length: gridSize }, () => Array(gridSize).fill(0));
+    const newGrid = Array.from({ length: gridSize }, () => Array(gridSize).fill(0));
+    tileCounts = { 0: gridSize * gridSize, 1: 0, 2: 0 };
+    return newGrid;
 }
 
 function initializeAnts() {
@@ -61,7 +59,14 @@ function initializeAnts() {
     });
 }
 
-function drawGrid() {
+function updateCounters() {
+    document.getElementById('iterationCounter').textContent = iterationCount;
+    document.getElementById('whiteTileCounter').textContent = tileCounts[0];
+    document.getElementById('redTileCounter').textContent = tileCounts[1];
+    document.getElementById('blueTileCounter').textContent = tileCounts[2];
+}
+
+function drawGrid(canvas, ctx) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let y = 0; y < gridSize; y++) {
         for (let x = 0; x < gridSize; x++) {
@@ -76,7 +81,7 @@ function drawGrid() {
     });
 }
 
-function update() {
+function updateLogic() {
     ants.forEach(ant => {
         const currentCell = grid[ant.y][ant.x];
         const rule = rules[ant.color][currentCell][ant.state];
@@ -85,7 +90,12 @@ function update() {
         ant.dir = (ant.dir + rule.turn + 4) % 4;
 
         // Change the grid color
-        grid[ant.y][ant.x] = rule.newGridColor;
+        const newGridColor = rule.newGridColor;
+        if (grid[ant.y][ant.x] !== newGridColor) {
+            tileCounts[grid[ant.y][ant.x]]--;
+            tileCounts[newGridColor]++;
+        }
+        grid[ant.y][ant.x] = newGridColor;
 
         // Update ant's state
         ant.state = rule.newState;
@@ -101,44 +111,74 @@ function update() {
         ant.x = (ant.x + gridSize) % gridSize;
         ant.y = (ant.y + gridSize) % gridSize;
     });
-
-    drawGrid();
 }
 
-function updateSimulationSpeed(change) {
-    simulationSpeed *= change;
-    if (intervalId) {
-        clearInterval(intervalId);
-        intervalId = setInterval(update, simulationSpeed);
+document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('gridCanvas');
+    if (!canvas) {
+        console.error('Canvas element not found!');
+        return;
     }
-}
+    const ctx = canvas.getContext('2d');
+    const cellSize = canvas.width / gridSize;
 
-document.getElementById('startButton').addEventListener('click', () => {
-    if (!intervalId) {
-        intervalId = setInterval(update, simulationSpeed);
+    let animationFrameId = null;
+    let simulationRunning = false;
+    let updatesPerFrame = 1;
+
+    function gameLoop() {
+        if (!simulationRunning) {
+            return;
+        }
+
+        for (let i = 0; i < updatesPerFrame; i++) {
+            updateLogic();
+            iterationCount++;
+        }
+
+        drawGrid(canvas, ctx);
+        updateCounters();
+        animationFrameId = requestAnimationFrame(gameLoop);
     }
-});
 
-document.getElementById('stopButton').addEventListener('click', () => {
-    clearInterval(intervalId);
-    intervalId = null;
-});
 
-document.getElementById('resetButton').addEventListener('click', () => {
-    clearInterval(intervalId);
-    intervalId = null;
-    grid = createEmptyGrid();
+    document.getElementById('startButton').addEventListener('click', () => {
+        if (!simulationRunning) {
+            simulationRunning = true;
+            gameLoop();
+        }
+    });
+
+    document.getElementById('stopButton').addEventListener('click', () => {
+        simulationRunning = false;
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+        }
+    });
+
+    document.getElementById('resetButton').addEventListener('click', () => {
+        simulationRunning = false;
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+        }
+        grid = createEmptyGrid();
+        initializeAnts();
+        iterationCount = 0;
+        updateCounters();
+        drawGrid(canvas, ctx);
+    });
+
+    document.getElementById('speedUpButton').addEventListener('click', () => {
+        updatesPerFrame = Math.min(100, updatesPerFrame * 1.5);
+    });
+
+    document.getElementById('slowDownButton').addEventListener('click', () => {
+        updatesPerFrame = Math.max(1, updatesPerFrame / 1.5);
+    });
+
     initializeAnts();
-    drawGrid();
-});
-
-document.getElementById('speedUpButton').addEventListener('click', () => {
-    updateSimulationSpeed(1.5);
-});
-
-document.getElementById('slowDownButton').addEventListener('click', () => {
-    updateSimulationSpeed(0.7);
-});
-
-initializeAnts();
-drawGrid(); 
+    updateCounters();
+    drawGrid(canvas, ctx);
+}); 

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Langton's Ant</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="nav-container">
+        <a href="index.html">Langton's Ants</a>
+        <a href="geneticants.html" class="active">Genetic Ants</a>
+    </div>
+    <h1>Genetic Ants Evolution</h1>
+    <div class="controls-container">
+        <button id="startGaButton">Start Evolution</button>
+        <button id="stopGaButton">Stop Evolution</button>
+        <button id="resetGaButton">Reset to Generation 0</button>
+    </div>
+    <div class="ga-stats-container">
+        <h3>Generation: <span id="generationCounter">0</span></h3>
+    </div>
+    <div class="sim-grid">
+        <div class="simulation-container">
+            <canvas id="gridCanvas0" width="384" height="384"></canvas>
+            <div class="stats-container">
+                <h4>Simulation 1</h4>
+                <p>Red Score: <span id="redScore0">0</span></p>
+                <p>Blue Score: <span id="blueScore0">0</span></p>
+            </div>
+        </div>
+        <div class="simulation-container">
+            <canvas id="gridCanvas1" width="384" height="384"></canvas>
+            <div class="stats-container">
+                <h4>Simulation 2</h4>
+                <p>Red Score: <span id="redScore1">0</span></p>
+                <p>Blue Score: <span id="blueScore1">0</span></p>
+            </div>
+        </div>
+        <div class="simulation-container">
+            <canvas id="gridCanvas2" width="384" height="384"></canvas>
+            <div class="stats-container">
+                <h4>Simulation 3</h4>
+                <p>Red Score: <span id="redScore2">0</span></p>
+                <p>Blue Score: <span id="blueScore2">0</span></p>
+            </div>
+        </div>
+        <div class="simulation-container">
+            <canvas id="gridCanvas3" width="384" height="384"></canvas>
+            <div class="stats-container">
+                <h4>Simulation 4</h4>
+                <p>Red Score: <span id="redScore3">0</span></p>
+                <p>Blue Score: <span id="blueScore3">0</span></p>
+            </div>
+        </div>
+    </div>
+    <script src="geneticants.js"></script>
+</body>
+</html> 

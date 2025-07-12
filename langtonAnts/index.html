@@ -7,14 +7,24 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Langton's Ant</h1>
-    <canvas id="gridCanvas" width="512" height="512"></canvas>
-    <div>
+    <div class="nav-container">
+        <a href="index.html" class="active">Langton's Ants</a>
+        <a href="geneticants.html">Genetic Ants</a>
+    </div>
+    <h1>Langton's Ant Simulation</h1>
+    <canvas id="gridCanvas" width="800" height="800"></canvas>
+    <div class="controls-container">
         <button id="startButton">Start</button>
         <button id="stopButton">Stop</button>
         <button id="resetButton">Reset</button>
         <button id="speedUpButton">Speed Up</button>
         <button id="slowDownButton">Slow Down</button>
+    </div>
+    <div class="stats-container">
+        <p>Iterations: <span id="iterationCounter">0</span></p>
+        <p>White Tiles: <span id="whiteTileCounter">0</span></p>
+        <p>Red Tiles: <span id="redTileCounter">0</span></p>
+        <p>Blue Tiles: <span id="blueTileCounter">0</span></p>
     </div>
     <script src="main.js"></script>
 </body>
