@@ -129,6 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const numSimulations = 4;
     const stepsPerGeneration = 100000;
     const mutationRate = 0.01;
+    const updatesPerFrame = 100; // Controls simulation speed within a generation
 
     let redTeamRules = Array.from({ length: numSimulations }, createTeamRules);
     let blueTeamRules = Array.from({ length: numSimulations }, createTeamRules);
@@ -345,11 +346,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            simulations.forEach(sim => sim.updateLogic());
-            step++;
-            if (step % 1000 === 0) { // Update UI every 1000 steps to keep it responsive
-                 simulations.forEach(sim => sim.drawGrid());
+            // Perform multiple logic updates for each frame to speed up the simulation
+            const stepsThisFrame = Math.min(updatesPerFrame, stepsPerGeneration - step);
+            for (let i = 0; i < stepsThisFrame; i++) {
+                simulations.forEach(sim => sim.updateLogic());
             }
+            step += stepsThisFrame;
+            
+            // Draw on every frame for smooth animation
+            simulations.forEach(sim => sim.drawGrid());
 
             animationFrameId = requestAnimationFrame(runStep);
         }
