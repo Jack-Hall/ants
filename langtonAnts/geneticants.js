@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const numSimulations = 8;
+    const numSimulations = 16;
     const antsPerSimulation = 24;
     const stepsPerGeneration = 50000;
-    const mutationRate = 0.01;
+    const mutationRate = 0.001;
     const updatesPerFrame = 100;
 
     let populations = Array.from({ length: numSimulations }, createPopulation);
@@ -150,15 +150,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         const newPopulations = [...currentPopulations];
-
-        // If a population is stagnant (and not the designated loser), replace it with random genes.
+        
         dominanceScores.forEach((score, index) => {
             if (score < 0.01 && index !== loserIndex) {
                 newPopulations[index] = createPopulation();
             }
         });
 
-        // Breed a new population from the winner to replace the loser.
         const winningPopulation = currentPopulations[winnerIndex];
         const newChildPopulation = [];
         for (let i = 0; i < antsPerSimulation; i++) {
